@@ -49,7 +49,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		chromedp.SendKeys(`input[name='user']`, os.Getenv("GRAFANA_USER")),
 		chromedp.SendKeys(`input[name='password']`, os.Getenv("GRAFANA_PASSWORD")),
 		chromedp.Click(`button[type='submit']`),
-		chromedp.Sleep(2*time.Second),
+		chromedp.Sleep(5*time.Second),
 		chromedp.EmulateViewport(540, 950),
 		chromedp.Screenshot(`div.grafana-app`, &res),
 	)
