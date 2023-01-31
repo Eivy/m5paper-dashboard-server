@@ -37,13 +37,15 @@ func main() {
 	defer cancel()
 	ctx, cancel = chromedp.NewContext(allocCtx, chromedp.WithLogf(log.Printf))
 	defer cancel()
-	chromedp.Run(ctx,
-		chromedp.Navigate(os.Getenv("GRAFANA_DASHBOARD_URL")),
-		chromedp.Sleep(2*time.Second),
-		chromedp.SendKeys(`input[name='user']`, os.Getenv("GRAFANA_USER")),
-		chromedp.SendKeys(`input[name='password']`, os.Getenv("GRAFANA_PASSWORD")),
-		chromedp.Click(`button[type='submit']`),
-	)
+	if os.Getenv("GRAFANA_NEED_LOGIN") != "" {
+		chromedp.Run(ctx,
+			chromedp.Navigate(os.Getenv("GRAFANA_DASHBOARD_URL")),
+			chromedp.Sleep(2*time.Second),
+			chromedp.SendKeys(`input[name='user']`, os.Getenv("GRAFANA_USER")),
+			chromedp.SendKeys(`input[name='password']`, os.Getenv("GRAFANA_PASSWORD")),
+			chromedp.Click(`button[type='submit']`),
+		)
+	}
 	if err := srv.ListenAndServe(); err != nil {
 		log.Print(err)
 	}
