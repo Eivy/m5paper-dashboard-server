@@ -55,7 +55,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	var res []byte
 	chromedp.Run(ctx,
 		chromedp.Navigate(os.Getenv("GRAFANA_DASHBOARD_URL")),
-		chromedp.Sleep(3*time.Second),
+		chromedp.WaitVisible(`div.u-over`),
 		chromedp.EmulateViewport(540, 950),
 		chromedp.Screenshot(`div.grafana-app`, &res),
 	)
