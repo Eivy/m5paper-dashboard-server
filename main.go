@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -53,6 +54,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		chromedp.EmulateViewport(540, 950),
 		chromedp.Screenshot(`div.grafana-app`, &res),
 	)
-	io.Copy(w, bytes.NewReader(res))
-	w.WriteHeader(http.StatusOK)
+	b, err := io.Copy(w, bytes.NewReader(res))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Add("Conetnt-Lengh", fmt.Sprint(b))
+	w.Header().Add("Content-Type", "image/png")
+	w.Header().Write(w)
 }
