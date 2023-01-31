@@ -59,7 +59,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.Header().Add("Conetnt-Lengh", fmt.Sprint(b))
+	w.Header().Add("Conetnt-Length", fmt.Sprint(b))
 	w.Header().Add("Content-Type", "image/png")
 	w.Header().Write(w)
 }
