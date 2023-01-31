@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"fmt"
-	"io"
+	"image/jpeg"
+	"image/png"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/chromedp/chromedp"
@@ -59,12 +60,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		chromedp.EmulateViewport(540, 950),
 		chromedp.Screenshot(`div.grafana-app`, &res),
 	)
-	b, err := io.Copy(w, bytes.NewReader(res))
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Header().Add("Conetnt-Length", fmt.Sprint(b))
-	w.Header().Add("Content-Type", "image/png")
-	w.Header().Write(w)
+	imageP, _ := png.Decode(bytes.NewReader(res))
+	tmp := filepath.Join(os.TempDir(), "grafana.jpg")
+	f, _ := os.Create(tmp)
+	jpeg.Encode(f, imageP, nil)
+	http.ServeFile(w, r, tmp)
 }
