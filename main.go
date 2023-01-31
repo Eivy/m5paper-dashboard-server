@@ -28,21 +28,13 @@ func main() {
 		Handler: mux,
 	}
 
-	if err := srv.ListenAndServe(); err != nil {
-		log.Print(err)
-	}
-
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	var res []byte
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Flag("headless", true), // headless=false に変更
 		chromedp.Flag("no-sandbox", true),
 	)
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
 	defer cancel()
-	ctx, cancel := chromedp.NewContext(allocCtx, chromedp.WithLogf(log.Printf))
+	ctx, cancel = chromedp.NewContext(allocCtx, chromedp.WithLogf(log.Printf))
 	defer cancel()
 	chromedp.Run(ctx,
 		chromedp.Navigate(os.Getenv("GRAFANA_DASHBOARD_URL")),
@@ -50,7 +42,20 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		chromedp.SendKeys(`input[name='user']`, os.Getenv("GRAFANA_USER")),
 		chromedp.SendKeys(`input[name='password']`, os.Getenv("GRAFANA_PASSWORD")),
 		chromedp.Click(`button[type='submit']`),
-		chromedp.Sleep(5*time.Second),
+	)
+	if err := srv.ListenAndServe(); err != nil {
+		log.Print(err)
+	}
+
+}
+
+var ctx context.Context
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	var res []byte
+	chromedp.Run(ctx,
+		chromedp.Navigate(os.Getenv("GRAFANA_DASHBOARD_URL")),
+		chromedp.Sleep(3*time.Second),
 		chromedp.EmulateViewport(540, 950),
 		chromedp.Screenshot(`div.grafana-app`, &res),
 	)
