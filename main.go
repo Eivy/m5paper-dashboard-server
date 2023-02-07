@@ -59,7 +59,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	chromedp.Run(ctx,
 		chromedp.Navigate(os.Getenv("GRAFANA_DASHBOARD_URL")),
 		chromedp.WaitVisible(`div.u-over`),
-		chromedp.EmulateViewport(540, 950),
+		chromedp.EmulateViewport(950, 540),
 		chromedp.Screenshot(`div.grafana-app`, &res),
 	)
 	imageP, _ := png.Decode(bytes.NewReader(res))
