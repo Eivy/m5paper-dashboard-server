@@ -61,7 +61,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		chromedp.WaitVisible(`div.u-over`),
 		chromedp.Sleep(2*time.Second),
 		chromedp.EmulateViewport(950, 540),
-		chromedp.Screenshot(`div.grafana-app`, &res),
+		chromedp.FullScreenshot(&res, 100),
 	)
 	imageP, _ := png.Decode(bytes.NewReader(res))
 	tmp := filepath.Join(os.TempDir(), "grafana.jpg")
