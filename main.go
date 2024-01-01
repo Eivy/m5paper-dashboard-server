@@ -58,10 +58,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	var res []byte
 	chromedp.Run(ctx,
 		chromedp.Navigate(os.Getenv("GRAFANA_DASHBOARD_URL")),
-		chromedp.WaitVisible(`div.u-over`),
-		chromedp.Sleep(2*time.Second),
 		chromedp.EmulateViewport(950, 540),
-		chromedp.FullScreenshot(&res, 100),
+		chromedp.WaitVisible(`div.u-over`),
+		chromedp.Sleep(200*time.Millisecond),
+		chromedp.CaptureScreenshot(&res),
 	)
 	imageP, _ := png.Decode(bytes.NewReader(res))
 	tmp := filepath.Join(os.TempDir(), "grafana.jpg")
