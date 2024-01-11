@@ -66,15 +66,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		chromedp.CaptureScreenshot(&res),
 	)
 	imageP, _ := png.Decode(bytes.NewReader(res))
-	dst := image.NewGray16(imageP.Bounds())
+	dst := image.NewGray(imageP.Bounds())
 	for y := 0; y < imageP.Bounds().Dy(); y++ {
 		for x := 0; x < imageP.Bounds().Dx(); x++ {
-			c := color.Gray16Model.Convert(imageP.At(x, y))
-			gray, _ := c.(color.Gray16)
-			if gray.Y > 62000 {
-				dst.Set(x, y, color.Gray16{Y: ^uint16(0)})
-			} else if gray.Y < 800 {
-				dst.Set(x, y, color.Gray16{Y: 0})
+			c := color.GrayModel.Convert(imageP.At(x, y))
+			gray, _ := c.(color.Gray)
+			if gray.Y > 200 {
+				dst.Set(x, y, color.Gray{Y: 255})
+			} else if gray.Y < 50 {
+				dst.Set(x, y, color.Gray{Y: 0})
 			} else {
 				dst.Set(x, y, gray)
 			}
