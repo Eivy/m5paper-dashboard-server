@@ -73,7 +73,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			gray, _ := c.(color.Gray)
 			if gray.Y > 200 {
 				dst.Set(x, y, color.Gray{Y: 255})
-			} else if gray.Y < 50 {
+			} else if gray.Y < 25 {
 				dst.Set(x, y, color.Gray{Y: 0})
 			} else {
 				dst.Set(x, y, gray)
