@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
+	"fmt"
 	"image"
 	"image/color"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/chromedp/chromedp"
@@ -89,5 +92,22 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	jpeg.Encode(w, dst, nil)
+	tmp := filepath.Join(os.TempDir(), "grafana.jpg")
+	f, err := os.Create(tmp)
+	if err != nil {
+		log.Fatal(err)
+	}
+	jpeg.Encode(f, dst, nil)
+	f.Close()
+	s, err := os.Stat(tmp)
+	if err != nil {
+		log.Fatal(err)
+	}
+	f, err = os.Open(tmp)
+	if err != nil {
+		log.Fatal(err)
+	}
+	w.Header().Add("Content-Length", fmt.Sprint(s.Size()))
+	w.WriteHeader(http.StatusOK)
+	io.Copy(w, f)
 }
