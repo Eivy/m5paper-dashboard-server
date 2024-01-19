@@ -80,8 +80,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	tmp := filepath.Join(os.TempDir(), "grafana.jpg")
-	f, _ := os.Create(tmp)
-	jpeg.Encode(f, dst, nil)
-	http.ServeFile(w, r, tmp)
+	jpeg.Encode(w, dst, nil)
 }
