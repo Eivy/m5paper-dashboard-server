@@ -11,7 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
+	"path"
 	"time"
 
 	"github.com/chromedp/chromedp"
@@ -40,8 +40,12 @@ func main() {
 	ctx, cancel = chromedp.NewContext(allocCtx, chromedp.WithLogf(log.Printf))
 	defer cancel()
 	if os.Getenv("GRAFANA_NEED_LOGIN") != "" {
+		trg := os.Getenv("GRAFANA_DASHBOARD_URL")
+		if trg == "" {
+			trg = os.Getenv("GRAFANA_URL")
+		}
 		chromedp.Run(ctx,
-			chromedp.Navigate(os.Getenv("GRAFANA_DASHBOARD_URL")),
+			chromedp.Navigate(trg),
 			chromedp.Sleep(2*time.Second),
 			chromedp.SendKeys(`input[name='user']`, os.Getenv("GRAFANA_USER")),
 			chromedp.SendKeys(`input[name='password']`, os.Getenv("GRAFANA_PASSWORD")),
@@ -58,8 +62,13 @@ var ctx context.Context
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	var res []byte
+	log.Println(path.Join(os.Getenv("GRAFANA_URL"), r.URL.Path+r.URL.RawQuery))
+	trg := os.Getenv("GRAFANA_DASHBOARD_URL")
+	if trg == "" {
+		trg = path.Join(os.Getenv("GRAFANA_URL"), r.URL.Path+"?"+r.URL.RawQuery)
+	}
 	chromedp.Run(ctx,
-		chromedp.Navigate(os.Getenv("GRAFANA_DASHBOARD_URL")),
+		chromedp.Navigate(trg),
 		chromedp.EmulateViewport(950, 540),
 		chromedp.WaitVisible(`div.u-over`),
 		chromedp.Sleep(200*time.Millisecond),
